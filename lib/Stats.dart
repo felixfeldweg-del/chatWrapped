@@ -117,6 +117,11 @@ class Stats extends StatelessWidget {
     return sortedMap;
   }
 
+  int averageTotalTime(List<Message> messages, DateTime firstTime){
+    final totalDur = DateTime.now().difference(firstTime);
+
+    return (totalDur.inMinutes/messages.length).round(); 
+  }
   @override
   Widget build(BuildContext context) {
     final splitedMessages = splitMessages(file);
@@ -132,6 +137,8 @@ class Stats extends StatelessWidget {
     final deletedMessagesOthers = countMessagesPerPerson(findString(deleteStringOthers, messages));
     final secertetMessages = countMessagesPerPerson(messages.where((m) =>  m.content.trim().isEmpty).toList());
     final messageTime = messageAnswerTime(messages);
+    final firstTime = messages[0].time;
+    final totalTimeAvg = averageTotalTime(messages, firstTime);
 
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -257,6 +264,9 @@ class Stats extends StatelessWidget {
               Text('min answertime', style: GoogleFonts.fugazOne(fontSize: 50), textAlign: TextAlign.center),
               ],
              
+              CountUpAnimation(endValue: totalTimeAvg),
+              Text('min per message', style: GoogleFonts.fugazOne(fontSize: 50), textAlign: TextAlign.center),
+              
               //MEDIEN  ✔
               //Häufigstes wort
               //Antwort zeit ✔
