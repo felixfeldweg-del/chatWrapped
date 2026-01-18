@@ -11,6 +11,7 @@ class Stats extends StatelessWidget {
   final editString = "<Diese Nachricht wurde bearbeitet.>";
   final deleteStringYou = "Du hast diese Nachricht gelöscht.";
   final deleteStringOthers = "Diese Nachricht wurde gelöscht.";
+  final int minWordLenght = 6;
 
   Stats({super.key, required this.file});
 
@@ -122,6 +123,33 @@ class Stats extends StatelessWidget {
 
     return (totalDur.inMinutes/messages.length).round(); 
   }
+
+  Map<String, int> wordAmount(List<Message> messages){
+    Map<String, int> wordAmounts = {};
+          final ignorePattern = RegExp(
+        r'<medien ausgeschlossen>|<diese nachricht wurde bearbeitet>|diese nachricht wurde gelöscht|du hast diese nachricht gelöscht',
+        caseSensitive: false,
+      );
+
+    for (var message in messages) {
+      final content = message.content;
+
+      if (ignorePattern.hasMatch(content)) continue;
+
+      for (var match in RegExp(r'[a-zA-ZäöüÄÖÜß]{'+ minWordLenght.toString() + r',}').allMatches(content.toLowerCase())) {
+        final word = match.group(0)!;
+        wordAmounts.update(word, (i) => i + 1, ifAbsent: () => 1);
+      }
+    }
+
+    final sorted = wordAmounts.entries.toList()
+     ..sort((a,b) => b.value.compareTo(a.value)); 
+
+    final first10 = sorted.take(10);
+    print(Map.fromEntries(first10));
+    return Map.fromEntries(first10);
+  }
+
   @override
   Widget build(BuildContext context) {
     final splitedMessages = splitMessages(file);
@@ -139,6 +167,7 @@ class Stats extends StatelessWidget {
     final messageTime = messageAnswerTime(messages);
     final firstTime = messages[0].time;
     final totalTimeAvg = averageTotalTime(messages, firstTime);
+    final mostMessages = wordAmount(messages);
 
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -264,6 +293,8 @@ class Stats extends StatelessWidget {
               Text('min answertime', style: GoogleFonts.fugazOne(fontSize: 50), textAlign: TextAlign.center),
               ],
              
+              Container(height: screenHeight/2),
+              
               CountUpAnimation(endValue: totalTimeAvg),
               Text('min per message', style: GoogleFonts.fugazOne(fontSize: 50), textAlign: TextAlign.center),
               
