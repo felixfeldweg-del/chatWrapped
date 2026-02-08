@@ -16,7 +16,7 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 ## Installation 
-Download an use the newes Version APK
+Download an use the newest
 [Relaese APK](build/app/outputs/flutter-apk/app-release.apk)
 
 ## Usage
